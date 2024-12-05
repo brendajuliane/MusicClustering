@@ -5,7 +5,8 @@ from sklearn.cluster import KMeans
 import matplotlib.pyplot as plt
 
 
-audio_files = glob('../base/*.mp3')
+audio_files = glob('../base/different-singer/*.mp3')
+audio_files = audio_files + glob('../base/*.mp3')
 print("Pasta com", len(audio_files), "audios carregados")
 
 n_mfcc = 13 
@@ -35,7 +36,7 @@ data_3d = X[:, :3]
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
 
-colors = ['red'] * 10 + ['green'] * 10 + ['blue'] * 10
+colors = ['black'] * 10 + ['red'] * 10 + ['green'] * 10 + ['blue'] * 10
 
 # Plotando os pontos
 ax.scatter(data_3d[:, 0], data_3d[:, 1], data_3d[:, 2], c=colors)

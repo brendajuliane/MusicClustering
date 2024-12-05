@@ -6,7 +6,8 @@ import numpy as np
 import librosa
 import csv
 
-audio_files = glob('../base/*.mp3')
+audio_files = glob('../base/different-singer/*.mp3')
+audio_files = audio_files + glob('../base/*.mp3')
 print("Pasta com", len(audio_files), "audios carregados")
 
 chromagrams = []

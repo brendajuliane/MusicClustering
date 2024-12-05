@@ -17,7 +17,8 @@ for audio_file in audio_files:
     y, sr = librosa.load(audio_file)
     mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=n_mfcc, hop_length=512)
     mfcc_mean = np.mean(mfcc, axis=1)
-    all_mfccs.append(mfcc_mean)
+    mfcc_mean_normalized = (mfcc_mean - np.min(mfcc_mean)) / (np.max(mfcc_mean) - np.min(mfcc_mean))
+    all_mfccs.append(mfcc_mean_normalized)
 
 X = np.array(all_mfccs) 
 

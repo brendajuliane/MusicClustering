@@ -7,7 +7,8 @@ import librosa
 import csv
 from random import *
 
-audio_files = glob('../base/*.mp3')
+audio_files = glob('../base/different-singer/*.mp3')
+audio_files = audio_files + glob('../base/*.mp3')
 print("Pasta com", len(audio_files), "audios carregados")
 
 chromagrams = []
@@ -30,11 +31,12 @@ for k in range(2,13):
     cluster_labels = cluster.labels_
 
     silhouette_avg = silhouette_score(X, cluster.labels_)
+    davies_boudin = davies_bouldin_score(X, cluster.labels_)
 
     print(f'\n\n\n------ Para {k} clusters, silhouette é {silhouette_avg} ------')
-    print(f'------ Davies é {davies_bouldin_score(X, cluster.labels_)}')
+    print(f'------ Davies é {davies_boudin}')
 
-    with open(f'kmedoids_chroma_results_rs_{rs}.csv', 'a', newline='') as csvfile:
+    with open(f'modified_kmedoids_chroma_results_rs_{rs}.csv', 'a', newline='') as csvfile:
         fieldnames = ['Cluster', 'Nome do Arquivo']
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
@@ -42,5 +44,14 @@ for k in range(2,13):
         writer.writerow({'Cluster': k, 'Nome do Arquivo': silhouette_avg})
 
         for i, audio_file in enumerate(audio_files):
-            audio_name = audio_file.replace('../base\\', '')
+            audio_name = audio_file.replace('./base\\', '')
             writer.writerow({'Cluster': cluster_labels[i], 'Nome do Arquivo': audio_name})
+
+    with open(f'modified_chroma_metrics_rs_{rs}.csv', 'a', newline='') as csvfile:
+        fieldnames = ['Cluster', 'silhueta', 'davies']
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+        if (k==2):
+            writer.writeheader()
+            
+        writer.writerow({'Cluster': k, 'silhueta': silhouette_avg, 'davies': davies_boudin})

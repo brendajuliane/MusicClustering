@@ -5,9 +5,10 @@ from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 from sklearn.metrics import davies_bouldin_score
 import csv
+from random import *
 
-
-audio_files = glob('../base/*.mp3')
+audio_files = glob('../base/different-singer/*.mp3')
+audio_files = audio_files + glob('../base/*.mp3')
 print("Pasta com", len(audio_files), "audios carregados")
 
 n_mfcc = 13 
@@ -22,19 +23,21 @@ for audio_file in audio_files:
 
 X = np.array(all_mfccs) 
 
+rs = randint(0, 1000)
+
 # Removendo o primeiro MFCC
 X = X[:,1:]
 
 for k in range(2,13): 
-    cluster = KMeans(n_clusters=k)
+    cluster = KMeans(n_clusters=k, init="random", random_state=rs)
     cluster.fit(X)
     cluster_labels = cluster.labels_
 
     silhouette_avg = silhouette_score(X, cluster.labels_)
+    davies_boudin = davies_bouldin_score(X, cluster.labels_)
 
-    print(f'\n\n\n------ Para {k} clusters, silhouette é {silhouette_avg} ------\n')
 
-    with open('kmeans_mfccs_results.csv', 'a', newline='') as csvfile:
+    with open(f'modified_base_kmeans_mfccs_results_rs_{rs}.csv', 'a', newline='') as csvfile:
         fieldnames = ['Cluster', 'Nome do Arquivo']
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
@@ -45,11 +48,11 @@ for k in range(2,13):
             audio_name = audio_file.replace('./base\\', '')
             writer.writerow({'Cluster': cluster_labels[i], 'Nome do Arquivo': audio_name})
     
-    with open('metrics.csv', 'a', newline='') as csvfile:
+    with open(f'modified_base_mfccs_metrics_rs_{rs}.csv', 'a', newline='') as csvfile:
         fieldnames = ['Cluster', 'silhueta', 'davies']
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
         if (k==2):
             writer.writeheader()
             
-        writer.writerow({'Cluster': k, 'silhueta': silhouette_avg, 'davies': davies_bouldin_score(X, cluster.labels_)})
+        writer.writerow({'Cluster': k, 'silhueta': silhouette_avg, 'davies': davies_boudin})
